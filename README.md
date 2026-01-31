@@ -1,95 +1,155 @@
-# Claude Project Discovery
+# Claude Project Management
 
-A minimal registry system for tracking Claude projects across directories.
+A registry system for tracking Claude projects across directories, with automatic session note persistence.
 
 ## What This Is
 
-Simple CLI tool to maintain a registry of project locations, making it easy to:
-1. Find which project to work on (projects scattered across directories)
-2. Resume work with context
+- **Project registry** (`~/.claude/projects.json`) - tracks where projects are
+- **Session notes** (`CLAUDE.local.md` in each project) - tracks what you were doing
+- **Automatic updates** via Claude Code hooks - no manual maintenance
+
+## How It Works
+
+1. Start Claude from anywhere (typically `~`)
+2. Say "work on dotfiles" or "resume dotfiles"
+3. Claude reads the project's session notes and continues where you left off
+4. When you end the session, hooks automatically:
+   - Save session notes to the project's `CLAUDE.local.md`
+   - Update the registry's "last worked" timestamp
 
 ## Installation
 
-Add to your PATH in `~/.zshrc`:
+### 1. Add to PATH
+
+In `~/.zshrc`:
 
 ```bash
 export PATH="$HOME/github.com/cyberswat/claude-workspace:$PATH"
 ```
 
-Then reload:
+### 2. Configure hooks
 
-```bash
-source ~/.zshrc
+Copy hook configuration to `~/.claude/settings.json`:
+
+```json
+{
+  "hooks": {
+    "SessionEnd": [
+      {
+        "hooks": [{
+          "type": "command",
+          "command": "$HOME/.claude/hooks/save-session.py"
+        }]
+      }
+    ],
+    "PreCompact": [
+      {
+        "hooks": [{
+          "type": "command",
+          "command": "$HOME/.claude/hooks/save-session.py"
+        }]
+      }
+    ]
+  }
+}
 ```
 
-## Usage
+### 3. Install hook script
 
-### Add a project
-```bash
-claude-projects add <name> <path>
+The `save-session.py` script should be at `~/.claude/hooks/save-session.py`.
 
-# Example
-claude-projects add meeting-management ~/github.com/cyberswat/meeting-management
-```
+## CLI Usage
 
 ### List all projects
-Projects are sorted by most recently worked on:
 ```bash
 claude-projects list
 ```
 
-Output format:
+Output (sorted by most recently worked):
 ```
-project-name                   /path/to/project                               2026-01-30
+dotfiles                       /home/user/github.com/user/dotfiles           2026-01-31
+claude-workspace               /home/user/github.com/user/claude-workspace   2026-01-30
 ```
 
-### Update last worked timestamp
+### Add a project manually
 ```bash
-claude-projects worked <name>
+claude-projects add <name> <path>
 
 # Example
-claude-projects worked meeting-management
+claude-projects add my-api ~/projects/my-api
 ```
 
 ### Remove a project
 ```bash
 claude-projects remove <name>
-
-# Example
-claude-projects remove old-project
 ```
 
-## Registry Location
-
-Projects are stored in `~/.claude/projects.json` with this simple format:
-
-```json
-{
-  "projects": {
-    "meeting-management": {
-      "path": "~/github.com/cyberswat/meeting-management",
-      "last_worked": "2026-01-30"
-    }
-  }
-}
+### Update timestamp manually (usually automatic)
+```bash
+claude-projects worked <name>
 ```
+
+## Claude Commands
+
+Inside Claude, say:
+
+| Command | What happens |
+|---------|--------------|
+| "work on dotfiles" | Switches to project, reads session notes |
+| "resume dotfiles" | Same as above |
+| "resume" | Offers most recent project |
+| "list projects" | Shows all tracked projects |
+| "what projects do I have?" | Same as above |
+
+## File Locations
+
+| File | Purpose |
+|------|---------|
+| `~/.claude/projects.json` | Project registry |
+| `~/.claude/settings.json` | Hook configuration |
+| `~/.claude/hooks/save-session.py` | Auto-save script |
+| `~/.claude/CLAUDE.md` | Global Claude instructions |
+| `<project>/CLAUDE.local.md` | Per-project session notes |
+
+## Session Notes Format
+
+Each project's `CLAUDE.local.md`:
+
+```markdown
+# Session Notes
+Last updated: 2026-01-31 02:30
+
+## Files Modified
+- src/main.py
+- tests/test_main.py
+
+## Commands Run
+- Run test suite
+- Git commit
+
+## Status
+Working on the API refactor
+
+## Next Steps
+- Add error handling
+- Write integration tests
+```
+
+The "Files Modified" and "Commands Run" sections are auto-generated.
+The "Status" and "Next Steps" sections are preserved when you edit them manually.
 
 ## Architecture
 
-**Minimal by design:**
-- `lib/registry.py` - Core registry operations (~40 lines)
-- `claude-projects` - CLI interface (~50 lines)
-- `requirements.txt` - Empty (stdlib only)
+```
+~/.claude/
+├── projects.json          # Registry (auto-updated)
+├── settings.json          # Hook config
+├── hooks/
+│   └── save-session.py    # Auto-save script
+└── CLAUDE.md              # Global instructions
 
-No external dependencies, no auto-scanning, no complex features. Just manual project tracking.
+~/project/
+└── CLAUDE.local.md        # Session notes (auto-generated)
+```
 
-## Future Enhancements (Only If Needed)
-
-Add these later if manual management becomes tedious:
-- Auto-discovery scanning
-- Git integration
-- Search/filter capabilities
-- Complex metadata
-- Statistics and reporting
-
-**Start simple, grow as needed.**
+No external dependencies. Pure Python stdlib.
