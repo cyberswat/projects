@@ -14,7 +14,7 @@ echo "Installing Claude session management..."
 # Create directories
 mkdir -p "$CLAUDE_DIR/hooks"
 
-# Copy config files (don't overwrite if they exist and are different)
+# Copy config files (backup if different)
 install_file() {
     local src="$1"
     local dest="$2"
@@ -29,9 +29,32 @@ install_file() {
     echo "  Installed: $dest"
 }
 
+# Merge hooks into existing settings.json (preserves all other settings)
+merge_settings() {
+    local hooks_file="$1"
+    local dest="$2"
+
+    if [ -f "$dest" ]; then
+        # Merge hooks into existing settings
+        local merged
+        merged=$("$SCRIPT_DIR/config/merge-settings.py" "$dest" "$hooks_file")
+        if [ $? -eq 0 ]; then
+            echo "$merged" > "$dest"
+            echo "  Merged hooks into: $dest"
+        else
+            echo "  ERROR: Failed to merge settings" >&2
+            exit 1
+        fi
+    else
+        # No existing settings, just copy
+        cp "$hooks_file" "$dest"
+        echo "  Created: $dest"
+    fi
+}
+
 # Install configuration files
 install_file "$SCRIPT_DIR/config/CLAUDE.md" "$CLAUDE_DIR/CLAUDE.md"
-install_file "$SCRIPT_DIR/config/settings.json" "$CLAUDE_DIR/settings.json"
+merge_settings "$SCRIPT_DIR/config/settings.json" "$CLAUDE_DIR/settings.json"
 install_file "$SCRIPT_DIR/config/save-session.py" "$CLAUDE_DIR/hooks/save-session.py"
 
 # Make hook script executable
