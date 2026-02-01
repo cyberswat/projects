@@ -41,10 +41,10 @@ Context: Wanted easier installation and portability for other users
 Decision: Convert from install script to Claude Code plugin
 Rationale: Plugins have one-line install, discoverable commands, and built-in distribution
 
-## 2026-01-30: Marker-based merge for config
-Context: Users may have custom content in their CLAUDE.md
-Decision: Use HTML comment markers to delimit managed sections
-Rationale: Preserves user customizations while allowing updates
+## 2026-01-31: Save context on project switch
+Context: Switching projects mid-session loses context about what was done
+Decision: Write summary to CLAUDE.local.md when switching away from a project
+Rationale: Captures context at the right moment, survives crashes, complements SessionEnd hook
 ```
 
 ## On Resume

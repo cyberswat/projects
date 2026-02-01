@@ -1,50 +1,63 @@
-# Claude Projects
+# Projects
 
 Multi-project management for Claude Code. Track projects, switch between them, and resume with context.
 
 ## Install
 
-```
-/plugin install cyberswat/claude-workspace
-```
+Add the marketplace and install:
 
-Or clone and install locally:
-
-```bash
-git clone git@github.com:cyberswat/claude-workspace.git
-# Then in Claude: /plugin install /path/to/claude-workspace
+```
+/plugin marketplace add cyberswat/plugins
+/plugin install projects@cyberswat
 ```
 
-## Commands
+## Usage
+
+### Commands
 
 | Command | Description |
 |---------|-------------|
-| `/projects:list` | List all projects |
-| `/projects:add <name> <path>` | Add a project |
-| `/projects:remove <name>` | Remove a project |
+| `/projects:list` | List all tracked projects |
+| `/projects:add <name> <path>` | Add a project to the registry |
+| `/projects:remove <name>` | Remove a project from the registry |
 
-## Natural Language
+### Natural Language
 
-You can also just say:
+Just say what you want:
 
-- "work on myproject" - switch to a project
-- "resume" - resume most recent project
-- "resume myproject" - resume specific project
-- "list projects" - show all projects
+- "work on myproject" or "switch to myproject"
+- "resume" (resumes most recent project)
+- "resume myproject"
+- "list projects"
+
+## Features
+
+### Context Saving
+
+When you switch projects, Claude automatically:
+- Saves a summary of what you did to `CLAUDE.local.md`
+- Updates the `last_worked` timestamp
+- Loads context from the target project
+
+This means you can pick up exactly where you left off.
+
+### Auto-Discovery
+
+A hook runs on session end that detects which projects you worked on (based on file operations) and updates their timestamps. Projects are auto-discovered when you work on them.
 
 ## Project Files
 
-Projects can have these optional files:
+Add these files to your project for richer context:
 
 | File | Purpose |
 |------|---------|
-| `CLAUDE.md` | Project-specific instructions |
-| `CLAUDE.local.md` | Session notes, current state |
-| `decisions.md` | Decision history |
+| `CLAUDE.md` | Project-specific instructions (committed) |
+| `CLAUDE.local.md` | Current state, auto-saved on switch (gitignored) |
+| `decisions.md` | Decision history with rationale |
 
 ### decisions.md
 
-Record significant decisions:
+Record significant decisions for future reference:
 
 ```markdown
 # Decisions
@@ -57,49 +70,17 @@ Rationale: One-line install, discoverable commands
 
 ## How It Works
 
-### Project Registry
-
 Projects are tracked in `~/.claude/projects.json`:
 
 ```json
 {
   "projects": {
     "myproject": {
-      "path": "/home/user/projects/myproject",
+      "path": "/home/user/myproject",
       "last_worked": "2026-01-31"
     }
   }
 }
-```
-
-### Auto-Save Hook
-
-The plugin includes a hook that fires on `SessionEnd` and `PreCompact`:
-
-- Detects which project directories were accessed
-- Updates registry timestamps automatically
-- Projects are auto-discovered when you work on them
-
-## Plugin Structure
-
-```
-projects/
-├── .claude-plugin/
-│   └── plugin.json
-├── commands/
-│   ├── list.md
-│   ├── add.md
-│   └── remove.md
-├── skills/
-│   ├── switch/
-│   │   └── SKILL.md
-│   └── decisions/
-│       └── SKILL.md
-├── hooks/
-│   ├── hooks.json
-│   └── save-session.py
-└── lib/
-    └── registry.py
 ```
 
 ## Uninstall
