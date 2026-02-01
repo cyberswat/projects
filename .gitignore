@@ -34,3 +34,6 @@ env/
 # OS
 .DS_Store
 Thumbs.db
+
+# Local session files
+CLAUDE.local.md
