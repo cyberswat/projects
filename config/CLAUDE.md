@@ -44,5 +44,32 @@ When a plan is completed:
 
 On resume:
 - Read `CLAUDE.local.md` if it exists
+- Read `decisions.md` if it exists for context on past decisions
 - Check git state (status, branch, recent commits)
 - Summarize and continue
+
+## Decision Tracking
+
+Projects may have a `decisions.md` file for recording significant decisions.
+
+### When to Record Decisions
+Record a decision when:
+- A significant choice was made after considering alternatives
+- The decision affects future work (even if no code was written)
+- You'd want to remember "why did we decide this?" later
+
+Do NOT record:
+- Exploration or experiments that didn't pan out
+- Routine implementation choices
+- Decisions still being discussed
+
+### Recording Format
+Append to `decisions.md`:
+```
+## YYYY-MM-DD: Brief Title
+Context: [What prompted this]
+Decision: [What we decided]
+Rationale: [Why]
+```
+
+Only record after the decision is confirmed and being acted on.
