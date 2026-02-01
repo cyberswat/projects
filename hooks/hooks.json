@@ -1,11 +1,12 @@
 {
+  "description": "Update project registry when session ends or context compacts",
   "hooks": {
     "SessionEnd": [
       {
         "hooks": [
           {
             "type": "command",
-            "command": "$HOME/.claude/hooks/save-session.py"
+            "command": "python3 ${CLAUDE_PLUGIN_ROOT}/hooks/save-session.py"
           }
         ]
       }
@@ -15,7 +16,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "$HOME/.claude/hooks/save-session.py"
+            "command": "python3 ${CLAUDE_PLUGIN_ROOT}/hooks/save-session.py"
           }
         ]
       }

@@ -1,0 +1,8 @@
+{
+  "name": "claude-projects",
+  "description": "Multi-project management for Claude Code. Track projects, switch between them, and resume with context.",
+  "version": "1.0.0",
+  "author": {
+    "name": "cyberswat"
+  }
+}
