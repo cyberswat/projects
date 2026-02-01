@@ -1,6 +1,6 @@
-# Claude Session Management
+# Claude Workspace
 
-Portable session management for Claude Code. Works on any machine (Linux, macOS, work, personal).
+Portable session management for Claude Code. Works on any machine (Linux, macOS).
 
 ## Quick Start
 
@@ -11,17 +11,26 @@ cd claude-workspace
 
 # Install
 ./install.sh
+```
 
-# Add to PATH (follow the instructions printed by install.sh)
-# Then reload your shell
+Add to your PATH in `~/.zshrc` or `~/.bashrc`:
+
+```bash
+export PATH="/path/to/claude-workspace:$PATH"
+```
+
+Then reload your shell:
+
+```bash
 source ~/.zshrc  # or ~/.bashrc
 ```
 
 ## What It Does
 
-- **Automatic session notes**: When you end a Claude session, notes are saved to `CLAUDE.local.md` in each project you worked on
 - **Project registry**: Track projects across your filesystem in `~/.claude/projects.json`
-- **Easy resumption**: Say "work on dotfiles" or "resume" to pick up where you left off
+- **Session notes**: Auto-generated `CLAUDE.local.md` in each project with files modified and commands run
+- **Decision tracking**: Optional `decisions.md` for recording significant decisions
+- **Easy resumption**: Say "work on myproject" or "resume" to pick up where you left off
 
 ## Daily Workflow
 
@@ -30,11 +39,11 @@ cd ~
 claude
 
 > resume                    # offers most recent project
-> work on dotfiles          # switch to specific project
+> work on myproject         # switch to specific project
 > list projects             # see all tracked projects
 
 # ... work ...
-# close terminal - notes save automatically
+# session notes save automatically on exit
 ```
 
 ## CLI Commands
@@ -49,10 +58,35 @@ claude-projects remove <name>     # Remove a project
 
 | Say this | What happens |
 |----------|--------------|
-| "work on dotfiles" | Switches to project, reads session notes |
-| "resume dotfiles" | Same as above |
+| "work on myproject" | Switches to project, reads context files |
+| "resume myproject" | Same as above |
 | "resume" | Offers most recent project |
 | "list projects" | Shows all tracked projects |
+
+## Project Files
+
+Projects can have these optional files:
+
+| File | Purpose | Commit? |
+|------|---------|---------|
+| `CLAUDE.md` | Project-specific instructions for Claude | Yes |
+| `CLAUDE.local.md` | Session notes, current state | Your choice |
+| `decisions.md` | Decision history | Your choice |
+
+### decisions.md
+
+Record significant decisions with context:
+
+```markdown
+# Decisions
+
+## 2026-01-31: Use markers for CLAUDE.md merge
+Context: Users may have custom content in ~/.claude/CLAUDE.md
+Decision: Use HTML comment markers to delimit managed section
+Rationale: Preserves user customizations while allowing updates
+```
+
+Claude reads this on resume and references relevant decisions.
 
 ## How It Works
 
@@ -65,73 +99,41 @@ Claude Code hooks fire on `SessionEnd` and `PreCompact`, running `save-session.p
 3. Generates/updates `CLAUDE.local.md` in each project
 4. Updates the registry timestamp
 
-### Session Notes Format
+### Global Instructions
 
-Each project's `CLAUDE.local.md`:
+The installer merges content into `~/.claude/CLAUDE.md` using markers:
 
 ```markdown
-# Session Notes
-Last updated: 2026-01-31 02:30
-
-## Files Modified
-- src/main.py
-- tests/test_main.py
-
-## Commands Run
-- Run test suite
-
-## Status
-Working on the API refactor
-
-## Next Steps
-- Add error handling
+<!-- BEGIN CLAUDE-WORKSPACE -->
+...managed content...
+<!-- END CLAUDE-WORKSPACE -->
 ```
 
-"Files Modified" and "Commands Run" are auto-generated.
-"Status" and "Next Steps" are preserved when you edit them.
+Your custom instructions outside these markers are preserved on update.
 
 ## Files Installed
 
 | File | Purpose |
 |------|---------|
-| `~/.claude/CLAUDE.md` | Global Claude instructions |
-| `~/.claude/settings.json` | Hook configuration |
+| `~/.claude/CLAUDE.md` | Global Claude instructions (merged) |
+| `~/.claude/settings.json` | Hook configuration (merged) |
 | `~/.claude/hooks/save-session.py` | Auto-save script |
-| `~/.claude/projects.json` | Project registry (machine-specific) |
-
-## Repository Structure
-
-```
-claude-workspace/
-├── install.sh              # Installation script
-├── claude-projects         # CLI tool
-├── config/
-│   ├── CLAUDE.md           # Global instructions template
-│   ├── settings.json       # Hook configuration
-│   └── save-session.py     # Hook script
-├── lib/
-│   └── registry.py         # Registry operations
-└── README.md
-```
+| `~/.claude/projects.json` | Project registry |
 
 ## Updating
-
-To update to latest version:
 
 ```bash
 cd claude-workspace
 git pull
-./install.sh  # Re-run to update config files
+./install.sh  # Merges updates, preserves your customizations
 ```
-
-Existing files are backed up before overwriting.
 
 ## Uninstalling
 
 ```bash
-rm -rf ~/.claude/hooks/save-session.py
-rm ~/.claude/settings.json
-# Optionally: rm ~/.claude/CLAUDE.md
+rm ~/.claude/hooks/save-session.py
+# Edit ~/.claude/settings.json to remove hooks
+# Edit ~/.claude/CLAUDE.md to remove managed section (or delete)
 # Keep ~/.claude/projects.json if you want to preserve your project list
 ```
 
