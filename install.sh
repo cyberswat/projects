@@ -29,6 +29,42 @@ install_file() {
     echo "  Installed: $dest"
 }
 
+# Merge managed section into CLAUDE.md (preserves user content)
+merge_claude_md() {
+    local src="$1"
+    local dest="$2"
+
+    if [ ! -f "$dest" ]; then
+        # No existing file, just copy
+        cp "$src" "$dest"
+        echo "  Created: $dest"
+        return
+    fi
+
+    # Check if markers exist in destination
+    if grep -qF '<!-- BEGIN CLAUDE-WORKSPACE -->' "$dest"; then
+        # Replace existing managed section using awk
+        awk '
+            /<!-- BEGIN CLAUDE-WORKSPACE -->/ { skip=1; next }
+            /<!-- END CLAUDE-WORKSPACE -->/ { skip=0; next }
+            !skip { print }
+        ' "$dest" > "$dest.tmp"
+
+        # Insert new managed content
+        {
+            cat "$dest.tmp"
+            cat "$src"
+        } > "$dest"
+        rm "$dest.tmp"
+        echo "  Updated managed section in: $dest"
+    else
+        # No markers, append managed section
+        echo "" >> "$dest"
+        cat "$src" >> "$dest"
+        echo "  Appended managed section to: $dest"
+    fi
+}
+
 # Merge hooks into existing settings.json (preserves all other settings)
 merge_settings() {
     local hooks_file="$1"
@@ -53,7 +89,7 @@ merge_settings() {
 }
 
 # Install configuration files
-install_file "$SCRIPT_DIR/config/CLAUDE.md" "$CLAUDE_DIR/CLAUDE.md"
+merge_claude_md "$SCRIPT_DIR/config/CLAUDE.md" "$CLAUDE_DIR/CLAUDE.md"
 merge_settings "$SCRIPT_DIR/config/settings.json" "$CLAUDE_DIR/settings.json"
 install_file "$SCRIPT_DIR/config/save-session.py" "$CLAUDE_DIR/hooks/save-session.py"
 

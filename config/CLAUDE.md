@@ -1,4 +1,5 @@
-# Global Claude Instructions
+<!-- BEGIN CLAUDE-WORKSPACE -->
+# Claude Workspace
 
 ## Git Commits
 
@@ -73,3 +74,4 @@ Rationale: [Why]
 ```
 
 Only record after the decision is confirmed and being acted on.
+<!-- END CLAUDE-WORKSPACE -->
