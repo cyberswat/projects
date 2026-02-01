@@ -43,14 +43,20 @@ def extract_project_roots(transcript_lines):
         except json.JSONDecodeError:
             continue
 
-        if entry.get('type') == 'tool_use':
-            tool_input = entry.get('input', {})
-            for key in ['file_path', 'path', 'directory']:
-                path = tool_input.get(key)
-                if path and path.startswith('/'):
-                    root = find_project_root(path)
-                    if root and root != home:
-                        project_roots.add(root)
+        # Tool uses are nested inside message.content
+        message = entry.get('message', {})
+        content = message.get('content', [])
+        if isinstance(content, list):
+            for item in content:
+                if isinstance(item, dict) and item.get('type') == 'tool_use':
+                    tool_input = item.get('input', {})
+                    for key in ['file_path', 'path', 'directory']:
+                        path = tool_input.get(key)
+                        if path and path.startswith('/'):
+                            root = find_project_root(path)
+                            # Exclude home dir and .claude config dir
+                            if root and root != home and not root.endswith('/.claude'):
+                                project_roots.add(root)
 
     return project_roots
 
