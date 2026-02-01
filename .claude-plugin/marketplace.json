@@ -9,7 +9,7 @@
       "name": "claude-projects",
       "description": "Track projects, switch between them, and resume with context",
       "version": "1.0.0",
-      "source": "."
+      "source": "./"
     }
   ]
 }
