@@ -1,10 +1,10 @@
 ---
-name: project-switching
+name: switch
 description: Use this skill when the user says "work on <project>", "switch to <project>", "resume <project>", "resume" (no project), "list projects", or "what projects do I have". Also use when working in a directory not in the registry.
 version: 1.0.0
 ---
 
-# Project Switching
+# Switch Projects
 
 Manage context when switching between projects tracked in `~/.claude/projects.json`.
 

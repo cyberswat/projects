@@ -19,9 +19,9 @@ git clone git@github.com:cyberswat/claude-workspace.git
 
 | Command | Description |
 |---------|-------------|
-| `/projects` | List all projects |
-| `/projects add <name> <path>` | Add a project |
-| `/projects remove <name>` | Remove a project |
+| `/projects:list` | List all projects |
+| `/projects:add <name> <path>` | Add a project |
+| `/projects:remove <name>` | Remove a project |
 
 ## Natural Language
 
@@ -83,15 +83,17 @@ The plugin includes a hook that fires on `SessionEnd` and `PreCompact`:
 ## Plugin Structure
 
 ```
-claude-projects/
+projects/
 ├── .claude-plugin/
 │   └── plugin.json
 ├── commands/
-│   └── projects.md
+│   ├── list.md
+│   ├── add.md
+│   └── remove.md
 ├── skills/
-│   ├── project-switching/
+│   ├── switch/
 │   │   └── SKILL.md
-│   └── decision-tracking/
+│   └── decisions/
 │       └── SKILL.md
 ├── hooks/
 │   ├── hooks.json
@@ -103,5 +105,5 @@ claude-projects/
 ## Uninstall
 
 ```
-/plugin uninstall claude-projects
+/plugin uninstall projects
 ```

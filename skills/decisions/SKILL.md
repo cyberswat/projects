@@ -1,10 +1,10 @@
 ---
-name: decision-tracking
+name: decisions
 description: Use this skill when a significant decision has been made and confirmed, when you need to record why a choice was made, or when referencing past decisions. Do not use for routine implementation choices or decisions still being discussed.
 version: 1.0.0
 ---
 
-# Decision Tracking
+# Decisions
 
 Projects may have a `decisions.md` file for recording significant decisions.
 
