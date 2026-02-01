@@ -83,6 +83,18 @@ Projects are tracked in `~/.claude/projects.json`:
 }
 ```
 
+## Updating
+
+**Option 1: Enable auto-update**
+
+1. Run `/plugin` → **Marketplaces** → select `cyberswat` → enable auto-update
+
+**Option 2: Manual update**
+
+```bash
+claude plugin update projects@cyberswat
+```
+
 ## Uninstall
 
 ```
