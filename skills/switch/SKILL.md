@@ -1,7 +1,7 @@
 ---
 name: switch
 description: Use this skill when the user says "work on <project>", "switch to <project>", "resume <project>", "resume" (no project), "list projects", or "what projects do I have". Also use when working in a directory not in the registry.
-version: 1.2.0
+version: 1.3.0
 ---
 
 # Switch Projects

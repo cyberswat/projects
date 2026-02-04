@@ -17,6 +17,7 @@ Add the marketplace and install:
 
 | Command | Description |
 |---------|-------------|
+| `/projects:create <name>` | Create a new project with git and GitHub remote |
 | `/projects:list` | List all tracked projects |
 | `/projects:add <name> <path>` | Add a project to the registry |
 | `/projects:remove <name>` | Remove a project from the registry |
@@ -68,12 +69,34 @@ Decision: Convert from install script to Claude Code plugin
 Rationale: One-line install, discoverable commands
 ```
 
+## Configuration
+
+Optional config in `~/.claude/projects.json`:
+
+```json
+{
+  "config": {
+    "base_path": "~/github.com/username",
+    "default_visibility": "private"
+  },
+  "projects": { ... }
+}
+```
+
+| Setting | Description |
+|---------|-------------|
+| `base_path` | Where new projects are created (used by `/projects:create`) |
+| `default_visibility` | GitHub repo visibility: `private` or `public` |
+
+If not configured, `/projects:create` will prompt on first use.
+
 ## How It Works
 
 Projects are tracked in `~/.claude/projects.json`:
 
 ```json
 {
+  "config": { ... },
   "projects": {
     "myproject": {
       "path": "/home/user/myproject",
